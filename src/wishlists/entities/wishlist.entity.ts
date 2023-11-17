@@ -23,7 +23,7 @@ export class Wishlist extends Base {
 
   // Ссылка на пользователя, который создал вишлист.
   @ManyToOne(() => User, (user) => user.wishlists)
-  user: User;
+  owner: User;
 
   // Набор ссылок на подарки.
   @ManyToMany(() => Wish)

@@ -1,4 +1,5 @@
 import { Entity, Column, ManyToOne } from 'typeorm';
+import { IsNumber } from 'class-validator';
 import { Base } from 'src/entities/base.entity';
 import { User } from 'src/users/entities/user.entity';
 import { Wish } from 'src/wishes/entities/wish.entity';
@@ -6,7 +7,8 @@ import { Wish } from 'src/wishes/entities/wish.entity';
 @Entity()
 export class Offer extends Base {
   //  Сумма заявки
-  @Column({ default: 0, type: 'decimal', precision: 10, scale: 2 })
+  @Column({ type: 'decimal', precision: 10, scale: 2 })
+  @IsNumber()
   amount: number;
 
   // Флаг, который определяет показывать ли информацию о скидывающемся в списке

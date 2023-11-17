@@ -1,26 +1,38 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { CreateOfferDto } from './dto/create-offer.dto';
 import { UpdateOfferDto } from './dto/update-offer.dto';
+import { Offer } from './entities/offer.entity';
 
 @Injectable()
 export class OffersService {
+  constructor(
+    @InjectRepository(Offer)
+    private offerRepository: Repository<Offer>,
+  ) {}
+
   create(createOfferDto: CreateOfferDto) {
-    return 'This action adds a new offer';
+    return this.offerRepository.save(createOfferDto);
   }
 
-  findAll() {
-    return `This action returns all offers`;
+  findAll(): Promise<Offer[]> {
+    return this.offerRepository.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} offer`;
+  findOne(id: number): Promise<Offer> {
+    return this.offerRepository.findOneBy({ id });
   }
 
   update(id: number, updateOfferDto: UpdateOfferDto) {
-    return `This action updates a #${id} offer`;
+    const offer = this.findOne(id);
+    if (!offer) {
+      throw new NotFoundException('Заявка не найдена');
+    }
+    return this.offerRepository.update({ id }, updateOfferDto);
   }
 
   remove(id: number) {
-    return `This action removes a #${id} offer`;
+    return this.offerRepository.delete({ id });
   }
 }

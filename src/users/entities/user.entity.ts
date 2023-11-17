@@ -41,6 +41,6 @@ export class User extends Base {
   offers: Offer[];
 
   // Список вишлистов, которые создал пользователь.
-  @OneToMany(() => Wishlist, (wishlist) => wishlist.user)
+  @OneToMany(() => Wishlist, (wishlist) => wishlist.owner)
   wishlists: Wishlist[];
 }

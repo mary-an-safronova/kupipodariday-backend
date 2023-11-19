@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -12,7 +12,7 @@ export class UsersService {
     private userRepository: Repository<User>,
   ) {}
 
-  create(createUserDto: CreateUserDto): Promise<User> {
+  create(createUserDto: CreateUserDto) {
     return this.userRepository.save(createUserDto);
   }
 
@@ -20,7 +20,7 @@ export class UsersService {
     return this.userRepository.find();
   }
 
-  findOne(id: number): Promise<User> {
+  findOne(id: any): Promise<User> {
     return this.userRepository.findOneBy({ id });
   }
 
@@ -28,11 +28,11 @@ export class UsersService {
     return this.userRepository.findOneBy({ username });
   }
 
+  findOneByEmail(email: string): Promise<User> {
+    return this.userRepository.findOneBy({ email });
+  }
+
   updateOne(id: number, updateUserDto: UpdateUserDto) {
-    const user = this.findOne(id);
-    if (!user) {
-      throw new NotFoundException('Пользователь не найден');
-    }
     return this.userRepository.update({ id }, updateUserDto);
   }
 

@@ -9,12 +9,14 @@ import {
   NotFoundException,
   Req,
   UseGuards,
+  Post,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 import { JwtGuard } from 'src/auth/guards/jwt.guard';
 import { BcryptService } from 'src/auth/bcrypt.service';
+import { SearchUserDto } from './dto/search-user.dto';
 
 @Controller('users')
 export class UsersController {
@@ -42,6 +44,17 @@ export class UsersController {
   @Get(':id')
   findOne(@Param('id', ParseIntPipe) id: number): Promise<User> {
     return this.usersService.findOne(id);
+  }
+
+  @UseGuards(JwtGuard)
+  @Post('/find')
+  async findMany(@Body() query: SearchUserDto) {
+    const users = await this.usersService.findMany(query);
+    return users.map((user) => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { password, ...rest } = user;
+      return rest;
+    });
   }
 
   @UseGuards(JwtGuard)

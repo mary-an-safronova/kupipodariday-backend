@@ -13,6 +13,7 @@ export class AuthController {
     private bcryptService: BcryptService,
   ) {}
 
+  // Авторизация пользователя
   // Стратегия local автоматически достанет username и password из тела запроса
   // Если пароль будет верным, данные пользователя окажутся в объекте req.user
   @UseGuards(LocalGuard)
@@ -22,6 +23,7 @@ export class AuthController {
     return this.authService.auth(req.user);
   }
 
+  // Регистрация пользователя
   @Post('signup')
   async signup(@Body() createUserDto: CreateUserDto) {
     const hashedPassword = await this.bcryptService.hashPassword(

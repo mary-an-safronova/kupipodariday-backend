@@ -2,12 +2,14 @@ import { Module } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthService } from './auth.service';
 import { UsersModule } from '../users/users.module';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { AuthController } from './auth.controller';
 import { LocalStrategy } from './strategies/local.strategy';
 import { BcryptService } from './bcrypt.service';
+import { User } from 'src/users/entities/user.entity';
 
 @Module({
   imports: [
@@ -24,6 +26,7 @@ import { BcryptService } from './bcrypt.service';
       inject: [ConfigService],
     }),
     ConfigModule,
+    TypeOrmModule.forFeature([User]),
   ],
   controllers: [AuthController],
   providers: [AuthService, JwtStrategy, LocalStrategy, BcryptService],

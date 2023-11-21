@@ -29,7 +29,7 @@ export class User extends Base {
   email: string;
 
   // Пароль пользователя
-  @Column()
+  @Column({ select: false })
   password: string;
 
   // Список желаемых подарков пользователя.

@@ -1,5 +1,5 @@
 import { Entity, Column, ManyToOne, OneToMany } from 'typeorm';
-import { Length, IsUrl, IsInt } from 'class-validator';
+import { Length, IsUrl, IsInt, Min } from 'class-validator';
 import { Base } from 'src/entities/base.entity';
 import { User } from 'src/users/entities/user.entity';
 import { Offer } from 'src/offers/entities/offer.entity';
@@ -23,10 +23,11 @@ export class Wish extends Base {
 
   // Стоимость подарка
   @Column({ type: 'decimal', precision: 10, scale: 2 })
+  @Min(1)
   price: number;
 
   // Сумма предварительного сбора или сумма, которую пользователи сейчас готовы скинуть на подарок
-  @Column({ type: 'decimal', precision: 10, scale: 2 })
+  @Column({ default: 0, type: 'decimal', precision: 10, scale: 2 })
   raised: number;
 
   // Ссылка на пользователя, который добавил пожелание подарка.

@@ -31,14 +31,14 @@ export class WishlistsController {
 
   @UseGuards(JwtGuard)
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  findOne(@Param('id') id: number) {
     return this.wishlistsService.findOne(+id);
   }
 
   @UseGuards(JwtGuard)
   @Patch(':id')
   update(
-    @Param('id') id: string,
+    @Param('id') id: number,
     @Body() updateWishlistDto: UpdateWishlistDto,
   ) {
     return this.wishlistsService.update(+id, updateWishlistDto);
@@ -46,7 +46,7 @@ export class WishlistsController {
 
   @UseGuards(JwtGuard)
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  remove(@Param('id') id: number) {
     return this.wishlistsService.remove(+id);
   }
 }

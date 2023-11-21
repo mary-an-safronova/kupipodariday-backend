@@ -1,15 +1,16 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { User } from 'src/users/entities/user.entity';
 import { JwtService } from '@nestjs/jwt';
-import { UsersService } from 'src/users/users.service';
 import { BcryptService } from './bcrypt.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private jwtService: JwtService,
-    private usersService: UsersService,
     private bcryptService: BcryptService,
+    @InjectRepository(User) private readonly usersRepository: Repository<User>,
   ) {}
 
   auth(user: User) {
@@ -19,7 +20,13 @@ export class AuthService {
   }
 
   async validatePassword(username: string, password: string): Promise<User> {
-    const user = await this.usersService.findOneByName(username);
+    // Получаем пользователя по имени вместе с полем пароля
+    const user = await this.usersRepository
+      .createQueryBuilder('user')
+      .addSelect('user.password')
+      .where('user.username = :username', { username })
+      .getOne();
+
     if (!user) throw new UnauthorizedException('Invalid credentials');
 
     const comparePassword = await this.bcryptService.comparePasswords(

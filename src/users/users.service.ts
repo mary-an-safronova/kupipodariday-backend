@@ -21,11 +21,11 @@ export class UsersService {
     return this.userRepository.find();
   }
 
-  findOne(id: number) {
+  findOne(id: number): Promise<User> {
     return this.userRepository.findOneBy({ id });
   }
 
-  findOneByName(username: string): Promise<User> {
+  findOneByName(username: string) {
     return this.userRepository.findOneBy({ username });
   }
 
@@ -36,7 +36,10 @@ export class UsersService {
   }
 
   updateOne(id: number, updateUserDto: UpdateUserDto) {
-    return this.userRepository.update({ id }, updateUserDto);
+    return this.userRepository.update(
+      { id },
+      { updatedAt: new Date(), ...updateUserDto },
+    );
   }
 
   removeById(id: number) {

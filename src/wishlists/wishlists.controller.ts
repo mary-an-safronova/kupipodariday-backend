@@ -7,43 +7,50 @@ import {
   Param,
   Delete,
   UseGuards,
+  Req,
 } from '@nestjs/common';
 import { WishlistsService } from './wishlists.service';
 import { CreateWishlistDto } from './dto/create-wishlist.dto';
 import { UpdateWishlistDto } from './dto/update-wishlist.dto';
 import { JwtGuard } from 'src/auth/guards/jwt.guard';
 
-@Controller('wishlists')
+@Controller('wishlistlists')
 export class WishlistsController {
   constructor(private readonly wishlistsService: WishlistsService) {}
 
+  // Создание вишлиста
   @UseGuards(JwtGuard)
   @Post()
-  create(@Body() createWishlistDto: CreateWishlistDto) {
-    return this.wishlistsService.create(createWishlistDto);
+  create(@Req() req, @Body() createWishlistDto: CreateWishlistDto) {
+    return this.wishlistsService.create(req.user, createWishlistDto);
   }
 
+  // Получение всех вишлистов
   @UseGuards(JwtGuard)
   @Get()
   findAll() {
     return this.wishlistsService.findAll();
   }
 
+  // Получение вишлиста по id
   @UseGuards(JwtGuard)
   @Get(':id')
   findOne(@Param('id') id: number) {
-    return this.wishlistsService.findOne(+id);
+    return this.wishlistsService.findOne(id);
   }
 
+  // Изменение своего вишлиста по id
   @UseGuards(JwtGuard)
   @Patch(':id')
-  update(
+  async update(
+    @Req() req,
     @Param('id') id: number,
     @Body() updateWishlistDto: UpdateWishlistDto,
   ) {
-    return this.wishlistsService.update(+id, updateWishlistDto);
+    return this.wishlistsService.update(req.user, id, updateWishlistDto);
   }
 
+  // Удаление вишлиста по id
   @UseGuards(JwtGuard)
   @Delete(':id')
   remove(@Param('id') id: number) {

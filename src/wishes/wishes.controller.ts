@@ -80,6 +80,7 @@ export class WishesController {
     return await this.wishesService.remove(+id);
   }
 
+  // Копирование чужого пожелания к себе
   @UseGuards(JwtGuard)
   @Post(':id/copy')
   async copy(@Req() req, @Param('id') id: number) {

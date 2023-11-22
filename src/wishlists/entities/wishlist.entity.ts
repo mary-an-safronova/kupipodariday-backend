@@ -12,7 +12,7 @@ export class Wishlist extends Base {
   name: string;
 
   // Описание подборки
-  @Column()
+  @Column({ default: null })
   @Length(0, 1500)
   description: string;
 

@@ -5,5 +5,7 @@ import { IsNotEmpty, IsInt } from 'class-validator';
 export class UpdateWishDto extends PartialType(CreateWishDto) {
   @IsNotEmpty()
   @IsInt()
-  copied: number;
+  copied?: number;
+
+  raised?: number;
 }

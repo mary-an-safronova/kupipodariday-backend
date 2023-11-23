@@ -22,7 +22,10 @@ export class Wishlist extends Base {
   image: string;
 
   // Ссылка на пользователя, который создал вишлист.
-  @ManyToOne(() => User, (user) => user.wishlists)
+  @ManyToOne(() => User, (user) => user.wishlists, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
   owner: User;
 
   // Набор ссылок на подарки.

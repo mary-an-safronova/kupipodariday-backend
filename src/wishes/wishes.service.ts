@@ -25,22 +25,49 @@ export class WishesService {
     return this.wishRepository.findOne({
       relations: {
         owner: true,
+        offers: true,
       },
       where: { id },
     });
   }
 
-  findUserWishes(id: number) {
-    return this.wishRepository.find({
+  async findUserWishes(id: number) {
+    const wishes = await this.wishRepository.find({
+      relations: {
+        offers: {
+          item: {
+            owner: true,
+            offers: true,
+          },
+          user: {
+            wishes: {
+              owner: true,
+              offers: true,
+            },
+            offers: {
+              user: true,
+            },
+            wishlists: {
+              owner: true,
+              items: true,
+            },
+          },
+        },
+      },
       where: { owner: { id } },
     });
+
+    return wishes;
   }
 
   findLast(): Promise<Wish[]> {
     return this.wishRepository.find({
       order: { createdAt: 'DESC' },
       take: 40,
-      relations: { owner: true },
+      relations: {
+        owner: true,
+        offers: true,
+      },
     });
   }
 
@@ -48,7 +75,10 @@ export class WishesService {
     return this.wishRepository.find({
       order: { copied: 'DESC' },
       take: 20,
-      relations: { owner: true },
+      relations: {
+        owner: true,
+        offers: true,
+      },
     });
   }
 

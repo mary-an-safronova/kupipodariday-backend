@@ -3,6 +3,7 @@ import { Length, IsUrl, IsInt, Min } from 'class-validator';
 import { Base } from 'src/entities/base.entity';
 import { User } from 'src/users/entities/user.entity';
 import { Offer } from 'src/offers/entities/offer.entity';
+import { ColumnNumericTransformer } from 'src/utils/column-numeric-transformer';
 
 @Entity()
 export class Wish extends Base {
@@ -22,16 +23,30 @@ export class Wish extends Base {
   image: string;
 
   // Стоимость подарка
-  @Column({ type: 'decimal', precision: 10, scale: 2 })
+  @Column({
+    type: 'decimal',
+    precision: 10,
+    scale: 2,
+    transformer: new ColumnNumericTransformer(),
+  })
   @Min(1)
   price: number;
 
   // Сумма предварительного сбора или сумма, которую пользователи сейчас готовы скинуть на подарок
-  @Column({ default: 0, type: 'decimal', precision: 10, scale: 2 })
+  @Column({
+    default: 0,
+    type: 'decimal',
+    precision: 10,
+    scale: 2,
+    transformer: new ColumnNumericTransformer(),
+  })
   raised: number;
 
   // Ссылка на пользователя, который добавил пожелание подарка.
-  @ManyToOne(() => User, (user) => user.wishes)
+  @ManyToOne(() => User, (user) => user.wishes, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
   owner: User;
 
   // Описание подарка

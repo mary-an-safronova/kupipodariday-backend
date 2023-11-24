@@ -1,17 +1,11 @@
 import { Controller, Post, UseGuards, Req, Body } from '@nestjs/common';
-import { UsersService } from '../users/users.service';
 import { AuthService } from './auth.service';
 import { LocalGuard } from './guards/local.guard';
 import { CreateUserDto } from '../users/dto/create-user.dto';
-import { BcryptService } from './bcrypt.service';
 
 @Controller()
 export class AuthController {
-  constructor(
-    private usersService: UsersService,
-    private authService: AuthService,
-    private bcryptService: BcryptService,
-  ) {}
+  constructor(private authService: AuthService) {}
 
   // Авторизация пользователя
   // Стратегия local автоматически достанет username и password из тела запроса
@@ -26,17 +20,6 @@ export class AuthController {
   // Регистрация пользователя
   @Post('signup')
   async signup(@Body() createUserDto: CreateUserDto) {
-    const hashedPassword = await this.bcryptService.hashPassword(
-      createUserDto.password,
-    );
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { password, ...rest } = createUserDto;
-    // При регистрации создаём пользователя
-    const user = await this.usersService.create({
-      password: hashedPassword,
-      ...rest,
-    });
-    // и генерируем для него токен
-    return this.authService.auth(user);
+    return await this.authService.signup(createUserDto);
   }
 }

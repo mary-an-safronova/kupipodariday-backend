@@ -8,7 +8,6 @@ import {
   Delete,
   UseGuards,
   Req,
-  BadRequestException,
 } from '@nestjs/common';
 import { WishesService } from './wishes.service';
 import { CreateWishDto } from './dto/create-wish.dto';
@@ -60,39 +59,20 @@ export class WishesController {
     @Body() updateWishDto: UpdateWishDto,
     @Req() req,
   ) {
-    const wish = await this.wishesService.findOne(id);
-    if (wish.owner.id !== req.user.id) {
-      throw new BadRequestException('Можно изменять только свои пожелания');
-    }
-    await this.wishesService.update(id, updateWishDto);
-    const updatedWish = await this.wishesService.findOne(id);
-    return updatedWish;
+    return await this.wishesService.update(req.user.id, id, updateWishDto);
   }
 
   // Удаление своего пожелания
   @UseGuards(JwtGuard)
   @Delete(':id')
   async remove(@Param('id') id: number, @Req() req) {
-    const wish = await this.wishesService.findOne(id);
-    if (wish.owner.id !== req.user.id) {
-      throw new BadRequestException('Можно удалять только свои пожелания');
-    }
-    return await this.wishesService.remove(+id);
+    return await this.wishesService.remove(req.user.id, id);
   }
 
   // Копирование чужого пожелания к себе
   @UseGuards(JwtGuard)
   @Post(':id/copy')
   async copy(@Req() req, @Param('id') id: number) {
-    const wish = await this.wishesService.findOne(id);
-    await this.wishesService.update(id, { copied: wish.copied + 1 });
-    const { name, link, image, price, description } = wish;
-    return this.wishesService.create(req.user, {
-      name,
-      link,
-      image,
-      price,
-      description,
-    });
+    return await this.wishesService.copy(req.user, id);
   }
 }

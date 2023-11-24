@@ -4,13 +4,17 @@ import { Repository } from 'typeorm';
 import { User } from 'src/users/entities/user.entity';
 import { JwtService } from '@nestjs/jwt';
 import { BcryptService } from './bcrypt.service';
+import { CreateUserDto } from 'src/users/dto/create-user.dto';
+import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private jwtService: JwtService,
     private bcryptService: BcryptService,
-    @InjectRepository(User) private readonly usersRepository: Repository<User>,
+    @InjectRepository(User)
+    private readonly usersRepository: Repository<User>,
+    private usersService: UsersService,
   ) {}
 
   auth(user: User) {
@@ -38,5 +42,20 @@ export class AuthService {
       throw new UnauthorizedException('Invalid credentials');
 
     return user;
+  }
+
+  async signup(createUserDto: CreateUserDto) {
+    const hashedPassword = await this.bcryptService.hashPassword(
+      createUserDto.password,
+    );
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password, ...rest } = createUserDto;
+    // При регистрации создаём пользователя
+    const user = await this.usersService.create({
+      password: hashedPassword,
+      ...rest,
+    });
+    // и генерируем для него токен
+    return this.auth(user);
   }
 }

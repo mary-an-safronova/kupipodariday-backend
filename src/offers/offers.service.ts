@@ -30,6 +30,14 @@ export class OffersService {
     if (user.id === wish.owner.id)
       throw new BadRequestException('Нельзя скинуться на свое пожелание');
 
+    const missingAmount = wish.price - wish.raised;
+
+    if (createOfferDto.amount > missingAmount) {
+      throw new BadRequestException(
+        `Сумма собранных средств не может превышать стоимость подарка. Максимальная сумма платежа: ${missingAmount} руб.`,
+      );
+    }
+
     // Обновление суммы предварительного сбора у пожелания
     wish.raised = wish.raised + createOfferDto.amount;
     await this.wishRepository.save(wish);

@@ -6,7 +6,6 @@ import {
   Param,
   Delete,
   ParseIntPipe,
-  NotFoundException,
   Req,
   UseGuards,
   Post,
@@ -59,19 +58,8 @@ export class UsersController {
   // Изменяем информацию о себе
   @UseGuards(JwtGuard)
   @Patch('/me')
-  async updateOne(@Req() req, @Body() updateUserDto: UpdateUserDto) {
-    const userId = req.user.id;
-    // Хеширование пароля при его обновлении
-    if (updateUserDto.password) {
-      const hashedPassword = await this.bcryptService.hashPassword(
-        updateUserDto.password,
-      );
-      updateUserDto.password = hashedPassword;
-    }
-    // Обновляем данные пользователя
-    await this.usersService.updateOne(userId, updateUserDto);
-    // Получаем обновленные данные
-    return await this.usersService.findOne(userId);
+  async update(@Req() req, @Body() updateUserDto: UpdateUserDto) {
+    return await this.usersService.update(req.user.id, updateUserDto);
   }
 
   // Получаем все свои пожелания
@@ -92,10 +80,6 @@ export class UsersController {
   @UseGuards(JwtGuard)
   @Delete(':id')
   async remove(@Param('id', ParseIntPipe) id: number) {
-    const user = await this.usersService.findOne(id);
-    if (!user) {
-      throw new NotFoundException('Пользователь не найден');
-    }
-    await this.usersService.removeById(id);
+    return await this.usersService.removeById(id);
   }
 }

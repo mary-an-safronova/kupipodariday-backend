@@ -1,16 +1,18 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { SearchUserDto } from './dto/search-user.dto';
 import { User } from './entities/user.entity';
+import { BcryptService } from 'src/auth/bcrypt.service';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>,
+    private bcryptService: BcryptService,
   ) {}
 
   create(createUserDto: CreateUserDto) {
@@ -35,14 +37,27 @@ export class UsersService {
     });
   }
 
-  updateOne(id: number, updateUserDto: UpdateUserDto) {
-    return this.userRepository.update(
+  async update(id: number, updateUserDto: UpdateUserDto) {
+    // Хеширование пароля при его обновлении
+    if (updateUserDto.password) {
+      const hashedPassword = await this.bcryptService.hashPassword(
+        updateUserDto.password,
+      );
+      updateUserDto.password = hashedPassword;
+    }
+    // Обновляем данные пользователя
+    await this.userRepository.update(
       { id },
       { updatedAt: new Date(), ...updateUserDto },
     );
+    return await this.findOne(id);
   }
 
-  removeById(id: number) {
+  async removeById(id: number) {
+    const user = await this.findOne(id);
+    if (!user) {
+      throw new NotFoundException('Пользователь не найден');
+    }
     return this.userRepository.delete({ id });
   }
 }

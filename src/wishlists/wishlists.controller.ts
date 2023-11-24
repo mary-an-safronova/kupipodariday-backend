@@ -53,7 +53,7 @@ export class WishlistsController {
   // Удаление вишлиста по id
   @UseGuards(JwtGuard)
   @Delete(':id')
-  remove(@Param('id') id: number) {
-    return this.wishlistsService.remove(+id);
+  async remove(@Req() req, @Param('id') id: number) {
+    return await this.wishlistsService.remove(req.user.id, id);
   }
 }

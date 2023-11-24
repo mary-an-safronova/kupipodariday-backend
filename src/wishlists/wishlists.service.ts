@@ -89,7 +89,14 @@ export class WishlistsService {
     return await this.findOne(id);
   }
 
-  remove(id: number) {
-    return this.wishlistRepository.delete({ id });
+  async remove(userId, id: number) {
+    const wishlist = await this.findOne(id);
+
+    if (wishlist.owner.id !== userId) {
+      throw new BadRequestException(
+        'Можно удалять только свои списки пожеланий',
+      );
+    }
+    return await this.wishlistRepository.delete({ id });
   }
 }

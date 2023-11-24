@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateWishDto } from './dto/create-wish.dto';
@@ -21,14 +21,15 @@ export class WishesService {
     return this.wishRepository.find();
   }
 
-  findOne(id: number) {
-    return this.wishRepository.findOne({
+  async findOne(id: number) {
+    const wish = await this.wishRepository.findOne({
       relations: {
         owner: true,
         offers: true,
       },
       where: { id },
     });
+    return wish;
   }
 
   async findUserWishes(id: number) {
@@ -82,14 +83,41 @@ export class WishesService {
     });
   }
 
-  update(id: number, updateWishDto: UpdateWishDto) {
-    return this.wishRepository.update(
+  async update(userId: number, id: number, updateWishDto: UpdateWishDto) {
+    const wish = await this.findOne(id);
+    if (wish.owner.id !== userId) {
+      throw new BadRequestException('Можно изменять только свои пожелания');
+    }
+    if (wish.raised > 0) {
+      throw new BadRequestException(
+        'Нельзя изменить пожелание, на которое уже кто-то готов скинуться',
+      );
+    }
+    await this.wishRepository.update(
       { id },
       { updatedAt: new Date(), ...updateWishDto },
     );
+    return await this.findOne(id);
   }
 
-  remove(id: number) {
+  async remove(userId: number, id: number) {
+    const wish = await this.findOne(id);
+    if (wish.owner.id !== userId) {
+      throw new BadRequestException('Можно удалять только свои пожелания');
+    }
     return this.wishRepository.delete({ id });
+  }
+
+  async copy(user: User, id: number) {
+    const wish = await this.findOne(id);
+    await this.wishRepository.update({ id }, { copied: wish.copied + 1 });
+    const { name, link, image, price, description } = wish;
+    return await this.create(user, {
+      name,
+      link,
+      image,
+      price,
+      description,
+    });
   }
 }

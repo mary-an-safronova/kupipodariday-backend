@@ -30,8 +30,7 @@ export class UsersController {
   @UseGuards(JwtGuard)
   @Get('/me')
   async getMe(@Req() req) {
-    const user = req.user;
-    return await this.usersService.findOne(user.id);
+    return await this.usersService.findOne(req.user.id);
   }
 
   // Получаем всех пользователей

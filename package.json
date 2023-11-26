@@ -1,8 +1,8 @@
 {
   "name": "kupipodariday-backend",
   "version": "0.0.1",
-  "description": "",
-  "author": "",
+  "description": "kupipodariday-backend",
+  "author": "Mariia Safronova",
   "private": true,
   "license": "UNLICENSED",
   "scripts": {

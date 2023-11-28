@@ -6,7 +6,7 @@ import {
 } from 'typeorm';
 
 @Entity()
-export class Base {
+export class BaseEntity {
   // Уникальный id
   @PrimaryGeneratedColumn()
   id: number;

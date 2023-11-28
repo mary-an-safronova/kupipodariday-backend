@@ -1,11 +1,11 @@
 import { Entity, Column, ManyToOne, ManyToMany, JoinTable } from 'typeorm';
 import { Length, IsUrl } from 'class-validator';
-import { Base } from 'src/entities/base.entity';
+import { BaseEntity } from 'src/entities/base.entity';
 import { User } from 'src/users/entities/user.entity';
 import { Wish } from 'src/wishes/entities/wish.entity';
 
 @Entity()
-export class Wishlist extends Base {
+export class Wishlist extends BaseEntity {
   // Название списка подарков
   @Column()
   @Length(1, 250)

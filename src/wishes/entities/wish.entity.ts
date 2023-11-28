@@ -1,12 +1,12 @@
 import { Entity, Column, ManyToOne, OneToMany } from 'typeorm';
 import { Length, IsUrl, IsInt, Min } from 'class-validator';
-import { Base } from 'src/entities/base.entity';
+import { BaseEntity } from 'src/entities/base.entity';
 import { User } from 'src/users/entities/user.entity';
 import { Offer } from 'src/offers/entities/offer.entity';
 import { ColumnNumericTransformer } from 'src/utils/column-numeric-transformer';
 
 @Entity()
-export class Wish extends Base {
+export class Wish extends BaseEntity {
   // Название подарка
   @Column()
   @Length(1, 250)

@@ -1,12 +1,12 @@
 import { Entity, Column, OneToMany } from 'typeorm';
 import { Length, IsEmail, IsNotEmpty, IsUrl } from 'class-validator';
-import { Base } from 'src/entities/base.entity';
+import { BaseEntity } from 'src/entities/base.entity';
 import { Wish } from 'src/wishes/entities/wish.entity';
 import { Wishlist } from 'src/wishlists/entities/wishlist.entity';
 import { Offer } from 'src/offers/entities/offer.entity';
 
 @Entity()
-export class User extends Base {
+export class User extends BaseEntity {
   // Имя пользователя
   @Column({ unique: true })
   @Length(2, 30)

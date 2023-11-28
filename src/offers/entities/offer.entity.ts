@@ -1,12 +1,12 @@
 import { Entity, Column, ManyToOne } from 'typeorm';
 import { IsNumber } from 'class-validator';
-import { Base } from 'src/entities/base.entity';
+import { BaseEntity } from 'src/entities/base.entity';
 import { User } from 'src/users/entities/user.entity';
 import { Wish } from 'src/wishes/entities/wish.entity';
 import { ColumnNumericTransformer } from 'src/utils/column-numeric-transformer';
 
 @Entity()
-export class Offer extends Base {
+export class Offer extends BaseEntity {
   // Сумма заявки
   @Column({
     default: 0,

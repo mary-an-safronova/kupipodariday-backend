@@ -14,7 +14,6 @@ import { UsersService } from './users.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 import { JwtGuard } from 'src/auth/guards/jwt.guard';
-import { BcryptService } from 'src/auth/bcrypt.service';
 import { SearchUserDto } from './dto/search-user.dto';
 import { WishesService } from 'src/wishes/wishes.service';
 
@@ -22,7 +21,6 @@ import { WishesService } from 'src/wishes/wishes.service';
 export class UsersController {
   constructor(
     private readonly usersService: UsersService,
-    private bcryptService: BcryptService,
     private wishesService: WishesService,
   ) {}
 

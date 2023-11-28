@@ -8,7 +8,7 @@ import { UsersModule } from '../users/users.module';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { AuthController } from './auth.controller';
 import { LocalStrategy } from './strategies/local.strategy';
-import { BcryptService } from './bcrypt.service';
+import { BcryptService } from '../shared/bcrypt.service';
 import { User } from 'src/users/entities/user.entity';
 
 @Module({

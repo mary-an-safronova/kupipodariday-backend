@@ -9,6 +9,7 @@ async function bootstrap() {
   // Добавим глобальный пайплайн валидации
   app.useGlobalPipes(new ValidationPipe());
 
+  // Подключим документацию Swagger
   const config = new DocumentBuilder()
     .setTitle('КупиПодариДай')
     .setDescription('Документация API сервиса вишлистов')

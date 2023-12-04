@@ -13,44 +13,39 @@ import { WishlistsService } from './wishlists.service';
 import { CreateWishlistDto } from './dto/create-wishlist.dto';
 import { UpdateWishlistDto } from './dto/update-wishlist.dto';
 import { JwtGuard } from 'src/auth/guards/jwt.guard';
-import {
-  ApiBadRequestResponse,
-  ApiCreatedResponse,
-  ApiOkResponse,
-  ApiTags,
-} from '@nestjs/swagger';
 import { Wishlist } from './entities/wishlist.entity';
+import { ApiDocs } from 'src/utils/api-doc.decorator';
 
-@ApiTags('Wishlistlists')
+@ApiDocs.Tags('Wishlistlists') // Название группы запросов в документации
 @UseGuards(JwtGuard) // Гард JwtGuard применен ко всем методам контроллера
 @Controller('wishlistlists')
 export class WishlistsController {
   constructor(private readonly wishlistsService: WishlistsService) {}
 
   // Создание вишлиста
-  @ApiCreatedResponse({ type: Wishlist })
+  @ApiDocs.CreatedResponse(Wishlist) // Ответ в документации
   @Post()
   create(@Req() req, @Body() createWishlistDto: CreateWishlistDto) {
     return this.wishlistsService.create(req.user, createWishlistDto);
   }
 
   // Получение всех вишлистов
-  @ApiOkResponse({ type: [Wishlist] })
+  @ApiDocs.OkResponse([Wishlist]) // Ответ в документации
   @Get()
   findAll() {
     return this.wishlistsService.findAll();
   }
 
   // Получение вишлиста по id
-  @ApiOkResponse({ type: Wishlist })
+  @ApiDocs.OkResponse(Wishlist) // Ответ в документации
   @Get(':id')
   findOne(@Param('id') id: number) {
     return this.wishlistsService.findOne(id);
   }
 
   // Изменение своего вишлиста по id
-  @ApiOkResponse({ type: Wishlist })
-  @ApiBadRequestResponse({
+  @ApiDocs.OkResponse(Wishlist) // Ответ в документации
+  @ApiDocs.BadRequestResponse({
     description: 'Можно изменять только свои списки пожеланий',
   })
   @Patch(':id')
@@ -63,8 +58,8 @@ export class WishlistsController {
   }
 
   // Удаление вишлиста по id
-  @ApiOkResponse({ description: 'Вишлист успешно удален' })
-  @ApiBadRequestResponse({
+  @ApiDocs.OkResponse(undefined, 'Вишлист успешно удален') // Ответ в документации
+  @ApiDocs.BadRequestResponse({
     description: 'Можно удалять только свои списки пожеланий',
   })
   @Delete(':id')

@@ -13,25 +13,19 @@ import { OffersService } from './offers.service';
 import { CreateOfferDto } from './dto/create-offer.dto';
 import { UpdateOfferDto } from './dto/update-offer.dto';
 import { JwtGuard } from 'src/auth/guards/jwt.guard';
-import {
-  ApiBadRequestResponse,
-  ApiCreatedResponse,
-  ApiNotFoundResponse,
-  ApiOkResponse,
-  ApiTags,
-} from '@nestjs/swagger';
 import { Offer } from './entities/offer.entity';
+import { ApiDocs } from 'src/utils/api-doc.decorator';
 
-@ApiTags('Offers')
+@ApiDocs.Tags('Offers') // Название группы запросов в документации
 @UseGuards(JwtGuard) // Гард JwtGuard применен ко всем методам контроллера
 @Controller('offers')
 export class OffersController {
   constructor(private readonly offersService: OffersService) {}
 
   // Создание оффера
-  @ApiCreatedResponse({ type: Offer })
-  @ApiNotFoundResponse({ description: 'Пожелание не найдено' })
-  @ApiBadRequestResponse({
+  @ApiDocs.CreatedResponse(Offer) // Ответ в документации
+  @ApiDocs.NotFoundResponse({ description: 'Пожелание не найдено' })
+  @ApiDocs.BadRequestResponse({
     description: 'Сумма собранных средств не может превышать стоимость подарка',
   })
   @Post()
@@ -40,14 +34,14 @@ export class OffersController {
   }
 
   // Получение всех офферов
-  @ApiOkResponse({ type: [Offer] })
+  @ApiDocs.OkResponse([Offer]) // Ответ в документации
   @Get()
   findAll() {
     return this.offersService.findAll();
   }
 
   // Получение оффера по id
-  @ApiOkResponse({ type: Offer })
+  @ApiDocs.OkResponse(Offer) // Ответ в документации
   @Get(':id')
   findOne(@Param('id') id: number) {
     return this.offersService.findOne(+id);

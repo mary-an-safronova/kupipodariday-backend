@@ -2,52 +2,38 @@ import { Controller, Post, UseGuards, Req, Body } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LocalGuard } from './guards/local.guard';
 import { CreateUserDto } from '../users/dto/create-user.dto';
-import {
-  ApiBody,
-  ApiConflictResponse,
-  ApiCreatedResponse,
-  ApiOkResponse,
-  ApiProperty,
-  ApiTags,
-  ApiUnauthorizedResponse,
-} from '@nestjs/swagger';
 import { User } from 'src/users/entities/user.entity';
+import { ApiDocs, LoginResponse } from 'src/utils/api-doc.decorator';
 
-class LoginResponse {
-  // Создаем класс для определения формата ответа
-  @ApiProperty({ example: 'random-string', description: 'JWT Access Token' })
-  access_token: string;
-}
-
-@ApiTags('Auth')
+@ApiDocs.Tags('Auth') // Название группы запросов в документации
 @Controller()
 export class AuthController {
   constructor(private authService: AuthService) {}
 
   // Авторизация пользователя
+  @ApiDocs.OkResponse(LoginResponse) // Ответ в документации
+  @ApiDocs.UnauthorizedResponse({
+    description: 'Некорректная пара логин и пароль',
+  })
   // Стратегия local автоматически достанет username и password из тела запроса
   // Если пароль будет верным, данные пользователя окажутся в объекте req.user
-  @ApiOkResponse({ type: LoginResponse })
-  @ApiUnauthorizedResponse({ description: 'Некорректная пара логин и пароль' })
   @UseGuards(LocalGuard)
   @Post('signin')
-  @ApiBody({
-    schema: {
-      type: 'object',
-      properties: {
-        username: { type: 'string', example: 'exampleuser' },
-        password: { type: 'string', example: 'somestrongpassword' },
-      },
+  @ApiDocs.Body({
+    type: 'object',
+    properties: {
+      username: { type: 'string', example: 'exampleuser' },
+      password: { type: 'string', example: 'somestrongpassword' },
     },
-  })
+  }) // Отображение запроса в документации
   async signin(@Req() req) {
     // Генерируем для пользователя JWT-токен
     return this.authService.auth(req.user);
   }
 
   // Регистрация пользователя
-  @ApiCreatedResponse({ type: User })
-  @ApiConflictResponse({
+  @ApiDocs.CreatedResponse(User) // Ответ в документации
+  @ApiDocs.ConflictResponse({
     description: 'Пользователь с таким email или username уже зарегистрирован',
   })
   @Post('signup')

@@ -13,21 +13,16 @@ import { WishesService } from './wishes.service';
 import { CreateWishDto } from './dto/create-wish.dto';
 import { UpdateWishDto } from './dto/update-wish.dto';
 import { JwtGuard } from 'src/auth/guards/jwt.guard';
-import {
-  ApiBadRequestResponse,
-  ApiCreatedResponse,
-  ApiOkResponse,
-  ApiTags,
-} from '@nestjs/swagger';
 import { Wish } from './entities/wish.entity';
+import { ApiDocs } from 'src/utils/api-doc.decorator';
 
-@ApiTags('Wishes')
+@ApiDocs.Tags('Wishes') // Название группы запросов в документации
 @Controller('wishes')
 export class WishesController {
   constructor(private readonly wishesService: WishesService) {}
 
   // Создание пожелания
-  @ApiCreatedResponse({ type: Wish })
+  @ApiDocs.CreatedResponse(Wish) // Ответ в документации
   @UseGuards(JwtGuard)
   @Post()
   create(@Req() req, @Body() createWishDto: CreateWishDto) {
@@ -35,7 +30,7 @@ export class WishesController {
   }
 
   // Получение всех пожеланий
-  @ApiOkResponse({ type: [Wish] })
+  @ApiDocs.OkResponse([Wish]) // Ответ в документации
   @UseGuards(JwtGuard)
   @Get()
   findAll() {
@@ -43,21 +38,21 @@ export class WishesController {
   }
 
   // Получение 40 последних пожеланий
-  @ApiOkResponse({ type: [Wish] })
+  @ApiDocs.OkResponse([Wish]) // Ответ в документации
   @Get('last')
   findLast() {
     return this.wishesService.findLast();
   }
 
   // Получение последних 20 самых популярных пожеланий
-  @ApiOkResponse({ type: [Wish] })
+  @ApiDocs.OkResponse([Wish]) // Ответ в документации
   @Get('top')
   findTop() {
     return this.wishesService.findTop();
   }
 
   // Получение пожелания по его id
-  @ApiOkResponse({ type: Wish })
+  @ApiDocs.OkResponse(Wish) // Ответ в документации
   @UseGuards(JwtGuard)
   @Get(':id')
   findOne(@Param('id') id: number) {
@@ -65,8 +60,8 @@ export class WishesController {
   }
 
   // Изменение пожелания
-  @ApiOkResponse({ type: Wish })
-  @ApiBadRequestResponse({
+  @ApiDocs.OkResponse(Wish) // Ответ в документации
+  @ApiDocs.BadRequestResponse({
     description:
       'Нельзя изменить пожелание, на которое уже кто-то готов скинуться',
   })
@@ -81,10 +76,8 @@ export class WishesController {
   }
 
   // Удаление своего пожелания
-  @ApiOkResponse({
-    description: 'Пожелание успешно удалено',
-  })
-  @ApiBadRequestResponse({
+  @ApiDocs.OkResponse(undefined, 'Пожелание успешно удалено') // Ответ в документации
+  @ApiDocs.BadRequestResponse({
     description: 'Можно удалять только свои пожелания',
   })
   @UseGuards(JwtGuard)
@@ -94,7 +87,7 @@ export class WishesController {
   }
 
   // Копирование чужого пожелания к себе
-  @ApiOkResponse({ type: Wish })
+  @ApiDocs.OkResponse(Wish) // Ответ в документации
   @UseGuards(JwtGuard)
   @Post(':id/copy')
   async copy(@Req() req, @Param('id') id: number) {
